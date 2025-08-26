@@ -166,27 +166,29 @@ const updateRoomsStatus = asyncHandler(async (req, res) => {
     const now = new Date();
 
     const rooms = await Room.find();
+    const updatedRooms = [];
 
     for (const room of rooms) {
         const booking = await Booking.findOne({
             room: room._id,
-            status: {
-                $in: [BookingStatus.CONFIRMED, BookingStatus.COMPLETED]
-            },
+            status: { $in: [BookingStatus.CONFIRMED, BookingStatus.COMPLETED] },
             checkInDate: { $lte: now },
             checkOutDate: { $gte: now }
-        });
+        }).populate("user", "fullName"); 
 
-        const newStatus = booking ? RoomStatus.OCCUPIED : RoomStatus.AVAILABLE || RoomStatus.MAINTENANCE;
+        const newStatus = booking ? RoomStatus.OCCUPIED : RoomStatus.AVAILABLE;
 
         await Room.findByIdAndUpdate(room._id, {
-            $set: {
-                status: newStatus
-            }
-        })
-    };
+            $set: { status: newStatus }
+        });
 
-    const updatedRooms = await Room.find();
+        // Add user info if occupied
+        updatedRooms.push({
+            ...room.toObject(),
+            status: newStatus,
+            occupiedBy: booking ? booking.user : null 
+        });
+    }
 
     return res
         .status(200)
