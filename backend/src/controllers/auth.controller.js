@@ -122,10 +122,17 @@ const logoutUser = asyncHandler(async (req, res) => {
 });
 
 const me = asyncHandler(async (req, res) => {
+
+    const user = await User.findById(req.user._id).select("-password");
+
+    if(!user) {
+        throw new ApiError(500, "Something went wrong while getting user details");
+    }
+
     return res
             .status(200)
             .json(
-                new ApiResponse(200, req.user, "User details fetched successfully")
+                new ApiResponse(200, user, "User details fetched successfully")
             );
 });
 
