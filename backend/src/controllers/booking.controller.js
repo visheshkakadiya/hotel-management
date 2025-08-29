@@ -99,6 +99,8 @@ const getBookingsHistory = asyncHandler(async (req, res) => {
                         $project: {
                             roomNo: 1,
                             roomType: 1,
+                            roomImage: 1,
+                            capacity: 1
                         }
                     }
                 ]
@@ -111,6 +113,7 @@ const getBookingsHistory = asyncHandler(async (req, res) => {
                 guests: 1,
                 totalPrice: 1,
                 status: 1,
+                room: 1,
             }
         }
     ])

@@ -32,11 +32,21 @@ function Signup() {
   };
 
   const onSubmit = async (data) => {
-    const response = await dispatch(registerUser(data));
-    if (response?.payload?.success) {
+    const formData = new FormData();
+    formData.append("fullName", data.fullName);
+    formData.append("email", data.email);
+    formData.append("password", data.password);
+    formData.append("contactNumber", data.contact);
+    formData.append("address", data.address);
+    formData.append("avatar", document.getElementById("avatar").files[0]); // get the file
+
+    const response = await dispatch(registerUser(formData));
+    console.log("response", response);
+    if (response?.type === "register/fulfilled") {
       const email = data?.email;
       const password = data?.password;
       const loginResult = await dispatch(loginUser({ email, password }));
+      console.log("loginResult", loginResult);
 
       if (loginResult?.type === "login/fulfilled") {
         navigate("/");
@@ -76,23 +86,23 @@ function Signup() {
                   )}
                 </div>
                 <label
-                  htmlFor="profilePic"
+                  htmlFor="avatar"
                   className="absolute bottom-0 right-0 w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-orange-700 transition-colors shadow-lg"
                 >
                   <Upload className="w-5 h-5 text-white" />
                 </label>
               </div>
               <input
-                id="profilePic"
+                id="avatar"
                 type="file"
                 accept="image/*"
-                {...register("profilePic", { required: "Profile picture is required" })}
+                {...register("avatar", { required: "Profile picture is required" })}
                 onChange={handleImageChange}
                 className="hidden"
               />
               <p className="text-sm text-gray-500">Click the camera icon to upload your photo</p>
-              {errors.profilePic && (
-                <p className="text-red-500 text-sm mt-1">{errors.profilePic.message}</p>
+              {errors.avatar && (
+                <p className="text-red-500 text-sm mt-1">{errors.avatar.message}</p>
               )}
             </div>
 

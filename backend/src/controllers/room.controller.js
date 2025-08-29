@@ -179,7 +179,7 @@ const getRoomById = asyncHandler(async (req, res) => {
 
     return res
             .status(200)
-            .json(new ApiResponse(200, {room, totalPrice, user}, "Room fetched successfully"));
+            .json(new ApiResponse(200, {room, user}, "Room fetched successfully"));
 })
 
 export {

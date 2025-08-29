@@ -7,6 +7,10 @@ import Layout from "./layout/layout.jsx";
 import Signup from './components/SignUp.jsx';
 import Login from './components/Login.jsx';
 import { currentUser } from './store/Slices/authSlice.js'
+import BookRoom from './components/BookRoom.jsx'
+import MyBookings from './components/MyBookings.jsx'
+import Profile from './components/Profile.jsx'
+import AdminPanel from './components/AdminPanel.jsx'
 
 function App() {
 
@@ -23,6 +27,22 @@ function App() {
           <Route 
             path=''
             element={<HomePage />}
+          />
+          <Route
+            path='/room/:roomId'
+            element={<BookRoom />}
+          />
+          <Route
+            path='/my-bookings'
+            element={<MyBookings />}
+          />
+          <Route
+            path='/profile'
+            element={<Profile />}
+          />
+          <Route
+            path='/admin-panel'
+            element={<AdminPanel />}
           />
         </Route>
         <Route path='/signup' element={<Signup />} />
