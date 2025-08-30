@@ -131,7 +131,6 @@ const MyBookings = () => {
               <div className="text-gray-500">No active bookings found.</div>
             ) : (
               activeBookings.map((booking) => (
-                console.log("booking",booking),
                 <div key={booking._id} className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-200">
                   <div className="flex flex-col lg:flex-row">
                     {/* Room Image */}

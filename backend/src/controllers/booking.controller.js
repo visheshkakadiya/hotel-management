@@ -172,12 +172,21 @@ const updateRoomsStatus = asyncHandler(async (req, res) => {
     const updatedRooms = [];
 
     for (const room of rooms) {
+        if (room.status === RoomStatus.MAINTENANCE) {
+            updatedRooms.push({
+                ...room.toObject(),
+                status: RoomStatus.MAINTENANCE,
+                occupiedBy: null
+            });
+            continue;
+        }
+
         const booking = await Booking.findOne({
             room: room._id,
             status: { $in: [BookingStatus.CONFIRMED, BookingStatus.COMPLETED] },
             checkInDate: { $lte: now },
             checkOutDate: { $gte: now }
-        }).populate("user", "fullName"); 
+        }).populate("user", "fullName");
 
         const newStatus = booking ? RoomStatus.OCCUPIED : RoomStatus.AVAILABLE;
 
@@ -185,11 +194,10 @@ const updateRoomsStatus = asyncHandler(async (req, res) => {
             $set: { status: newStatus }
         });
 
-        // Add user info if occupied
         updatedRooms.push({
             ...room.toObject(),
             status: newStatus,
-            occupiedBy: booking ? booking.user : null 
+            occupiedBy: booking ? booking.user : null
         });
     }
 

@@ -6,7 +6,7 @@ import { upload } from "../middlewares/multer.middleware.js";
 const router = express.Router();
 
 router.post("/create-room", authMiddleware, upload.single("roomImage"), createRoom);
-router.get("/all-rooms", authMiddleware, getRooms);
+router.get("/all-rooms", getRooms);
 router.patch("/update-room/:roomId", authMiddleware, upload.single("roomImage"), updateRoom);
 router.delete("/delete-room/:roomId", authMiddleware, deleteRoom);
 router.get("/room/:roomId", authMiddleware, getRoomById);

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import { Routes, Route } from 'react-router-dom' 
+import { Routes, Route, Navigate } from 'react-router-dom'
 import Navbar from './components/Navbar'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import HomePage from './pages/HomePage'
 import Layout from "./layout/layout.jsx";
 import Signup from './components/SignUp.jsx';
@@ -11,6 +11,9 @@ import BookRoom from './components/BookRoom.jsx'
 import MyBookings from './components/MyBookings.jsx'
 import Profile from './components/Profile.jsx'
 import AdminPanel from './components/AdminPanel.jsx'
+import AuthLayout from './components/AuthLayout.jsx'
+import AdminRoute from './components/AdminRoute.jsx'
+import { Toaster } from 'react-hot-toast'
 
 function App() {
 
@@ -22,27 +25,56 @@ function App() {
 
   return (
     <>
+      <Toaster
+        position="bottom-right"
+        reverseOrder={true}
+        toastOptions={{
+          error: {
+            style: { borderRadius: "0", color: "red" },
+          },
+          success: {
+            style: { borderRadius: "0", color: "green" },
+          },
+          duration: 2000,
+        }}
+      />
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route 
+          <Route
             path=''
             element={<HomePage />}
           />
           <Route
             path='/room/:roomId'
-            element={<BookRoom />}
+            element={
+              <AuthLayout>
+                <BookRoom />
+              </AuthLayout>
+            }
           />
           <Route
             path='/my-bookings'
-            element={<MyBookings />}
+            element={
+              <AuthLayout>
+                <MyBookings />
+              </AuthLayout>
+            }
           />
           <Route
             path='/profile'
-            element={<Profile />}
+            element={
+              <AuthLayout>
+                <Profile />
+              </AuthLayout>
+            }
           />
           <Route
             path='/admin-panel'
-            element={<AdminPanel />}
+            element={
+              <AdminRoute>
+                <AdminPanel />
+              </AdminRoute>
+            }
           />
         </Route>
         <Route path='/signup' element={<Signup />} />

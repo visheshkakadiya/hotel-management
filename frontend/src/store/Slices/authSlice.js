@@ -12,9 +12,9 @@ const initialState = {
 export const registerUser = createAsyncThunk("register", async (data) => {
     try {
         const response = await axiosInstance.post("/auth/register", data);
-        return response.data;
+        return response.data.data;
     } catch (error) {
-        toast.error(error.response.data.message);
+        toast.error(error.response.data.message || "Registration failed");
         throw error;
     }
 })
@@ -22,9 +22,9 @@ export const registerUser = createAsyncThunk("register", async (data) => {
 export const loginUser = createAsyncThunk("login", async (data) => {
     try {
         const response = await axiosInstance.post("/auth/login", data);
-        return response.data;
+        return response.data.data;
     } catch (error) {
-        toast.error(error.response.data.message);
+        toast.error(error.response.data.message || "Invalid credentials");
         throw error;
     }
 })
@@ -32,9 +32,9 @@ export const loginUser = createAsyncThunk("login", async (data) => {
 export const logoutUser = createAsyncThunk("logout", async () => {
     try {
         const response = await axiosInstance.post("/auth/logout");
-        return response.data;
+        return response.data.data;
     } catch (error) {
-        toast.error(error.response.data.message);
+        toast.error(error.response.data.message || "Logout failed");
         throw error;
     }
 });
@@ -75,6 +75,12 @@ const authSlice = createSlice({
                 state.loading = true;
             })
             .addCase(logoutUser.fulfilled, (state) => {
+                state.loading = false;
+                state.user = null;
+                state.status = false;
+            })
+            .addCase(logoutUser.rejected, (state) => {
+                state.loading = false;
                 state.user = null;
                 state.status = false;
             })
@@ -86,6 +92,11 @@ const authSlice = createSlice({
                 state.user = action.payload;
                 state.status = true;
             })
+            .addCase(currentUser.rejected, (state) => {
+                state.loading = false;
+                state.user = null;
+                state.status = false;
+            });
     },
 });
 

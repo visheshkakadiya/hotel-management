@@ -50,11 +50,6 @@ const createRoom = asyncHandler(async (req, res) => {
 })
 
 const getRooms = asyncHandler(async (req, res) => {
-    const user = req.user;
-
-    if(user.role !== "admin") {
-        throw new ApiError(401, "you are not authorized to get rooms");
-    }
 
     const rooms = await Room.find();
 
@@ -85,38 +80,34 @@ const updateRoom = asyncHandler(async (req, res) => {
         throw new ApiError(401, "you are not authorized to update room");
     }
 
-    const roomImageToDelete = room.roomImage.public_id;
-
-    const roomImageLocalPath = req.file?.path;
-
-    if(!roomImageLocalPath) {
-        throw new ApiError(400, "Room image is required");
-    }
-
-    const roomImage = await uploadOnCloudinary(roomImageLocalPath);
-
-    if(!roomImage) {
-        throw new ApiError(500, "Something went wrong while uploading room image");
-    }
-
-    const updatedRoom = await Room.findByIdAndUpdate(roomId, {
+    let updatedFields = {
         roomNo,
         roomType,
-        roomImage: {
-            url: roomImage.url,
-            public_id: roomImage.public_id
-        },
         status,
         price,
         capacity
-    }, {new: true});
+    };
+
+    const roomImageLocalPath = req.file?.path;
+
+    if(roomImageLocalPath) {
+        // If new image provided, upload and update
+        const roomImage = await uploadOnCloudinary(roomImageLocalPath);
+        if(!roomImage) {
+            throw new ApiError(500, "Something went wrong while uploading room image");
+        }
+        updatedFields.roomImage = {
+            url: roomImage.url,
+            public_id: roomImage.public_id
+        };
+        // Delete old image from cloudinary
+        await deleteOnCloudinary(room.roomImage.public_id);
+    }
+
+    const updatedRoom = await Room.findByIdAndUpdate(roomId, updatedFields, {new: true});
 
     if(!updatedRoom) {
         throw new ApiError(500, "Something went wrong while updating room");
-    }
-
-    if(updatedRoom) {
-        await deleteOnCloudinary(roomImageToDelete);
     }
 
     return res

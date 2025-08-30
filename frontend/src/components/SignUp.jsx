@@ -4,6 +4,7 @@ import { User, Mail, Lock, Phone, MapPin, Upload, Eye, EyeOff } from "lucide-rea
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { loginUser, registerUser } from "../store/Slices/authSlice.js";
+import toast from "react-hot-toast";
 
 function Signup() {
   const [imagePreview, setImagePreview] = useState(null);
@@ -32,25 +33,30 @@ function Signup() {
   };
 
   const onSubmit = async (data) => {
-    const formData = new FormData();
-    formData.append("fullName", data.fullName);
-    formData.append("email", data.email);
-    formData.append("password", data.password);
-    formData.append("contactNumber", data.contact);
-    formData.append("address", data.address);
-    formData.append("avatar", document.getElementById("avatar").files[0]); // get the file
+    try {
+      setIsLoading(true);
+      const formData = new FormData();
+      formData.append("fullName", data.fullName);
+      formData.append("email", data.email);
+      formData.append("password", data.password);
+      formData.append("contactNumber", data.contact);
+      formData.append("address", data.address);
+      formData.append("avatar", document.getElementById("avatar").files[0]); // get the file
 
-    const response = await dispatch(registerUser(formData));
-    console.log("response", response);
-    if (response?.type === "register/fulfilled") {
-      const email = data?.email;
-      const password = data?.password;
-      const loginResult = await dispatch(loginUser({ email, password }));
-      console.log("loginResult", loginResult);
+      const response = await dispatch(registerUser(formData));
+      if (response?.type === "register/fulfilled") {
+        const email = data?.email;
+        const password = data?.password;
+        const loginResult = await dispatch(loginUser({ email, password }));
 
-      if (loginResult?.type === "login/fulfilled") {
-        navigate("/");
+        if (loginResult?.type === "login/fulfilled") {
+          navigate("/");
+        }
       }
+    } catch (error) {
+      toast.error(error.response.data.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -133,7 +139,7 @@ function Signup() {
                 </label>
                 <input
                   type="email"
-                  {...register("email", { 
+                  {...register("email", {
                     required: "Email is required",
                     pattern: {
                       value: /^\S+@\S+$/i,
@@ -157,7 +163,7 @@ function Signup() {
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
-                    {...register("password", { 
+                    {...register("password", {
                       required: "Password is required",
                       minLength: {
                         value: 8,
@@ -188,7 +194,7 @@ function Signup() {
                 </label>
                 <input
                   type="tel"
-                  {...register("contact", { 
+                  {...register("contact", {
                     required: "Contact number is required",
                     pattern: {
                       value: /^[+]?[\d\s-()]+$/,
@@ -242,8 +248,8 @@ function Signup() {
           <div className="text-center mt-8">
             <p className="text-gray-600">
               Already have an account?{" "}
-              <a 
-                href="/login" 
+              <a
+                href="/login"
                 className="text-orange-600 hover:text-orange-800 font-semibold hover:underline transition-colors"
               >
                 Sign in here
