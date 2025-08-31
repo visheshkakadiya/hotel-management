@@ -7,10 +7,6 @@ function AdminRoute({ children }) {
     const user = useSelector((state) => state.auth.user);
     const loading = useSelector((state) => state.auth?.loading);
     const status = useSelector((state) => state.auth.status);
-    
-    console.log("AdminRoute - user:", user);
-    console.log("AdminRoute - loading:", loading);
-    console.log("AdminRoute - status:", status);
 
     // Show loading while authentication is in progress
     if (loading || status === false) {
