@@ -13,6 +13,7 @@ import Profile from './components/Profile.jsx'
 import AdminPanel from './components/AdminPanel.jsx'
 import AuthLayout from './components/AuthLayout.jsx'
 import AdminRoute from './components/AdminRoute.jsx'
+import EditRoom from './components/EditRoom.jsx'
 import { Toaster } from 'react-hot-toast'
 
 function App() {
@@ -73,6 +74,14 @@ function App() {
             element={
               <AdminRoute>
                 <AdminPanel />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path='/edit-room/:roomId'
+            element={
+              <AdminRoute>
+                <EditRoom />
               </AdminRoute>
             }
           />
